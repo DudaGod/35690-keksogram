@@ -1,0 +1,274 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: #232321;
+}
+
+html.inline-element {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+body {
+  color: #ffe753;
+  font: 14px 'Open Sans', Arial, sans-serif;
+}
+
+.invisible {
+  display: none;
+}
+
+.filters {
+  text-align: center;
+  padding: 15px 0;
+}
+
+.filters-item {
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 30px;
+  padding: 0 16px;
+  text-decoration: underline;
+}
+
+.filters-radio {
+  left: -100px;
+  position: absolute;
+  right: -100px;
+}
+
+.filters-radio:checked + .filters-item {
+  background: #fff;
+  border-radius: 2px;
+  color: #000;
+  text-decoration: none;
+}
+
+.upload {
+  background: url('../img/logo-background-1.jpg') center;
+  border: 0;
+  height: 569px;
+  left: 50%;
+  margin: 5px 0 0 -291px;
+  margin-top: 5px;
+  padding: 0;
+  position: absolute;
+  width: 582px;
+}
+
+.upload-overlay {
+  border: none;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.upload-form {
+  height: 569px;
+  width: 582px;
+}
+
+.upload-image {
+  background: url('../img/logo-mask.png') no-repeat center;
+  position: relative;
+  z-index: 1;
+}
+
+.upload-resize,
+.upload-filter {
+  background: rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.resize-image-preview,
+.filter-image-preview {
+  max-width: 582px;
+}
+
+.filter-chrome {
+  -webkit-filter: grayscale(1);
+  filter: grayscale(1);
+}
+
+.filter-sepia {
+  -webkit-filter: sepia(1);
+  filter: sepia(1);
+}
+
+.upload-input {
+  visibility: hidden;
+}
+
+.upload-control {
+  background: url('../img/icon-photo.png') center no-repeat;
+  border: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  height: 182px;
+  margin: 0;
+  left: 202px;
+  padding: 0;
+  position: absolute;
+  top: 193px;
+  width: 182px;
+}
+
+.upload-submit {
+  background-image: url('../img/upload-button.png');
+}
+
+.upload-file {
+  display: block;
+}
+
+.upload-submit {
+  display: none;
+}
+
+.upload-input-hasvalue + .upload-file {
+  display: none;
+}
+
+.upload-input-hasvalue + .upload-file + .upload-submit {
+  display: block;
+}
+
+.upload-form-controls {
+  border: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  z-index: 0;
+}
+
+.upload-form-controls button {
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  display: block;
+  height: 42px;
+  padding: 0;
+  width: 42px;
+}
+
+.upload-form-controls-prev {
+  background: rgba(255, 255, 255, 0.2) url('../img/icon-cross.png') center no-repeat;
+  float: left;
+}
+
+.upload-form-controls-fwd {
+  background: rgba(255, 231, 83, 0.2) url('../img/icon-arrow.png') center no-repeat;
+  float: right;
+}
+
+.upload-resize-controls {
+  border: 0;
+  bottom: 10px;
+  color: #fff;
+  font-size: 12px;
+  left: 50%;
+  line-height: 42px;
+  margin: 0;
+  margin-left: -235px;
+  padding: 0;
+  position: absolute;
+  text-align: center;
+  width: 470px;
+  z-index: 1;
+}
+
+.upload-resize-controls input {
+  border: none;
+  border-radius: 2px;
+  color: #000;
+  font: 16px/1.3 'Open Sans';
+  margin-left: 10px;
+  margin-right: 20px;
+  margin-top: -3px;
+  padding: 0 3px;
+  text-align: center;
+  vertical-align: middle;
+  width: 3em;
+}
+
+.upload-filter-controls {
+  border: 0;
+  bottom: 10px;
+  color: #fff;
+  font-size: 12px;
+  left: 50%;
+  line-height: 42px;
+  margin: 0;
+  margin-left: -235px;
+  padding: 0;
+  position: absolute;
+  text-align: center;
+  width: 470px;
+  z-index: 1;
+}
+
+.upload-filter-controls input[type=radio] {
+  position: absolute;
+  visibility: hidden;
+}
+
+.upload-filter-label {
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font: bold 14px 'Open Sans Condensed';
+  margin: 0 10px;
+  text-transform: uppercase;
+}
+
+input[type=radio]:checked + .upload-filter-label {
+  color: #ffe753;
+}
+
+.pictures {
+  font-size: 0;
+  margin: 0 auto;
+  padding-left: 12px;
+  text-align: left;
+  width: 980px;
+}
+
+.picture {
+  display: inline-block;
+  height: 182px;
+  margin-bottom: 14px;
+  margin-right: 14px;
+  width: 182px;
+}
+
+.picture img {
+  border: 0;
+}
+
+.picture:nth-of-type(2n-1):nth-of-type(-n+6) {
+  margin-right: 600px;
+}
+
+@media (min-width: 1380px) {
+  .pictures {
+    width: 1380px;
+  }
+
+  .picture:nth-of-type(2n-1):nth-of-type(-n+6) {
+    margin-right: 12px;
+  }
+
+  .picture:nth-of-type(2),
+  .picture:nth-of-type(6),
+  .picture:nth-of-type(10) {
+    margin-right: 600px;
+  }
+}
