@@ -1,3 +1,5 @@
+"use strict";
+
 (function() {
   var uploadForm = document.forms['upload-select-image'];
   var resizeForm = document.forms['upload-resize'];
@@ -5,13 +7,7 @@
 
   var previewImage = filterForm.querySelector('.filter-image-preview');
   var prevButton = filterForm['filter-prev'];
-
   var selectedFilter = filterForm['upload-filter'];
-  var filterCookieName = selectedFilter['upload-filter-none'].name;
-
-  if (docCookies.hasItem(filterCookieName)) {
-    selectedFilter.value = docCookies.getItem(filterCookieName);
-  }
 
   var BIRTH_DAY = new Date(1989, 10, 28, 21);
   var MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -22,7 +18,7 @@
     if (!filterMap) {
       filterMap = {
         'none': 'filter-none',
-        'chrome': 'filter-chrome-test',
+        'chrome': 'filter-chrome',
         'sepia': 'filter-sepia'
       };
     }
@@ -49,13 +45,17 @@
     var expireDate = new Date();
     var expireDateInDays = expireDate.getDate() + Math.round((expireDate - BIRTH_DAY) / MILLISECONDS_IN_DAY);
     expireDate.setDate(expireDateInDays);
-    docCookies.setItem(filterCookieName, selectedFilter.value, expireDate);
+    docCookies.setItem('upload-filter', selectedFilter.value, expireDate);
 
     uploadForm.classList.remove('invisible');
     filterForm.classList.add('invisible');
 
     filterForm.submit();
   };
+
+  if (docCookies.hasItem('upload-filter')) {
+    selectedFilter.value = docCookies.getItem('upload-filter');
+  }
 
   setFilter();
 })();
