@@ -21,8 +21,22 @@
   displacementY.min = 0;
   side.min = 50;
 
+  function getValue(elem) {
+    return +elem.value;
+  }
+
+  function getMax(elem) {
+    return +elem.max;
+  }
+
+  function getMin(elem) {
+    return +elem.min;
+  }
+
   displacementX.onchange = function() {
-    if (!displacementX.max || +displacementX.value > +displacementX.max) {
+    if (!getMax(displacementX)
+      || getValue(displacementX) > getMax(displacementX)
+      || getValue(displacementX) < getMin(displacementX)) {
       setDisplacement();
     }
 
@@ -30,7 +44,9 @@
   };
 
   displacementY.onchange = function() {
-    if (!displacementY.max || +displacementY.value > +displacementY.max) {
+    if (getMax(displacementY)
+      || getValue(displacementY) > getMax(displacementY)
+      || getValue(displacementY) < getMin(displacementY)) {
       setDisplacement();
     }
 
@@ -38,7 +54,9 @@
   };
 
   side.onchange = function() {
-    if (!side.max || +side.value > +side.max) {
+    if (!getMax(side)
+      || getValue(side) > getMax(side)
+      || getValue(side) < getMin(side)) {
       setSide();
     }
 
@@ -57,7 +75,7 @@
   resizeForm.onsubmit = function(evt) {
     evt.preventDefault();
 
-    if(sideIsValid() && displacementIsValid()) {
+    if (sideIsValid() && displacementIsValid()) {
       filterForm.elements['filter-image-src'] = previewImage.src;
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
@@ -66,42 +84,51 @@
 
 
   function setDisplacement() {
-    displacementX.max = Math.max(previewImage.naturalWidth - side.value, 0);
-    displacementY.max = Math.max(previewImage.naturalHeight - side.value, 0);
+    displacementX.max = Math.max(previewImage.naturalWidth - getValue(side), 0);
+    displacementY.max = Math.max(previewImage.naturalHeight - getValue(side), 0);
 
-    if (+displacementX.value > +displacementX.max) {
-      displacementX.value = displacementX.max;
+    if (getValue(displacementX) > getMax(displacementX)) {
+      displacementX.value = getMax(displacementX);
+    }
+    else if (getValue(displacementX) < getMin(displacementX)) {
+      displacementX.value = getMin(displacementX);
     }
 
-    if (+displacementY.value > +displacementY.max) {
-      displacementY.value = displacementY.max;
+    if (getValue(displacementY) > getMax(displacementY)) {
+      displacementY.value = getMax(displacementY);
+    }
+    else if (getValue(displacementY) < getMin(displacementY)) {
+      displacementY.value = getMin(displacementY);
     }
   }
 
   function displacementIsValid() {
-    if (!displacementX.max || !displacementY.max) {
+    if (!getMax(displacementX) || !getMax(displacementY)) {
       setDisplacement();
     }
 
-    return +displacementX.value <= +displacementX.max && +displacementY.value <= +displacementY.max;
+    return getValue(displacementX) <= getMax(displacementX) && getValue(displacementY) <= getMax(displacementY);
   }
 
   function setSide() {
     side.max = Math.min(
-      previewImage.naturalWidth - displacementX.value,
-      previewImage.naturalHeight - displacementY.value);
+      previewImage.naturalWidth - getValue(displacementX),
+      previewImage.naturalHeight - getValue(displacementY));
 
-    if (+side.value > +side.max) {
-      side.value = Math.max(side.max, side.min);
+    if (getValue(side) > getMax(side)) {
+      side.value = Math.max(getMax(side), getMin(side));
+    }
+    else if (getValue(side) < getMin(side)) {
+      side.value = Math.min(getMax(side), getMin(side));
     }
   }
 
   function sideIsValid() {
-    if(!side.max) {
+    if (!getMax(side)) {
       setSide();
     }
 
-    return +side.value <= +side.max;
+    return getValue(side) <= getMax(side);
   }
 
 })();

@@ -1,4 +1,5 @@
+gosha/
+node_modules/
 .idea/*
-node_modules
 npm-debug.log
 *.orig
