@@ -1,7 +1,7 @@
+root: true
+
 globals:
   docCookies: true
-
-root: true
 
 env:
   browser: true
@@ -14,7 +14,6 @@ rules:
   block-spacing: 2
   brace-style: [2, "1tbs"]
   camelcase: [2, { properties: "never" }]
-  callback-return: [2, ["cb", "callback", "next"]]
   comma-spacing: 2
   comma-style: [2, "last"]
   consistent-return: 2
@@ -71,7 +70,6 @@ rules:
   no-underscore-dangle: 2
   no-unused-expressions: 2
   no-unused-vars: [2, {vars: "all", args: "after-used"}]
-  no-use-before-define: 2
   no-with: 2
   quotes: [2, "single"]
   radix: 2

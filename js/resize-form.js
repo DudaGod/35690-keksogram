@@ -21,6 +21,7 @@
   displacementY.min = 0;
   side.min = 50;
 
+
   function getValue(elem) {
     return +elem.value;
   }
@@ -76,13 +77,16 @@
     evt.preventDefault();
 
     if (sideIsValid() && displacementIsValid()) {
-      filterForm.elements['filter-image-src'] = previewImage.src;
+      console.dir(filterForm);
+      filterForm.elements['filter-image-src'].src = previewImage.src;
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
     }
   };
 
-
+  /**
+   * Set max and value for displacementX and displacementY parameters
+   */
   function setDisplacement() {
     displacementX.max = Math.max(previewImage.naturalWidth - getValue(side), 0);
     displacementY.max = Math.max(previewImage.naturalHeight - getValue(side), 0);
@@ -110,6 +114,9 @@
     return getValue(displacementX) <= getMax(displacementX) && getValue(displacementY) <= getMax(displacementY);
   }
 
+  /**
+   * Set max and valu for side parameter
+   */
   function setSide() {
     side.max = Math.min(
       previewImage.naturalWidth - getValue(displacementX),

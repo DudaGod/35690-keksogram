@@ -2,11 +2,11 @@
 
 (function() {
   var XHR_STATE = {
-    'UNSENT': 0,
-    'OPENED': 1,
-    'HEADERS_RECEIVED': 2,
-    'LOADING': 3,
-    'DONE': 4
+    UNSENT: 0,
+    OPENED: 1,
+    HEADERS_RECEIVED: 2,
+    LOADING: 3,
+    DONE: 4
   };
 
   var REQUEST_FAILURE_TIMEOUT = 10000;
@@ -46,11 +46,14 @@
     }
   }
 
+  /**
+   * Send a request if pictures received successfully
+   * @param {requestCallback} callback - The callback that handles the response
+   */
   function loadPictures(callback) {
     var xhr = new XMLHttpRequest();
     xhr.timeout = REQUEST_FAILURE_TIMEOUT;
     xhr.open('get', 'data/pictures.json');
-    xhr.send();
 
     xhr.onreadystatechange = function(evt) {
       var loadedXhr = evt.target;
@@ -74,20 +77,33 @@
     xhr.ontimeout = function() {
       showLoadFailure();
     };
+
+    xhr.send();
   }
 
   function showLoadFailure() {
     picturesContainer.classList.add('pictures-failure');
   }
 
+  /**
+   * Handle chosen filter
+   * @param {string} filterValue
+   */
   function setActiveFilter(filterValue) {
-    var filteredPictures = filterPictures(pictures, filterValue);
+    var filteredPictures = pictures.slice(0);
+    filteredPictures = filterPictures(filteredPictures, filterValue);
     renderPictures(filteredPictures);
   }
 
-  function filterPictures(pictures, filterValue) {
-    var filteredPictures = pictures.slice(0);
-
+  /**
+   * Change the display order of pictures:
+   * new - pictures are not older than 30 days + desc order by date
+   * discussed - desc order by comments
+   * @param {Object} filteredPictures
+   * @param {String} filterValue
+   * @return {Object}
+   */
+  function filterPictures(filteredPictures, filterValue) {
     switch (filterValue) {
       case 'new':
         filteredPictures = filteredPictures.filter(function(item) {
@@ -107,12 +123,15 @@
         break;
 
       default:
-        // filteredPictures = pictures.slice(0);
         break;
     }
     return filteredPictures;
   }
 
+  /**
+   * Display pictures
+   * @param {Object} pictures
+   */
   function renderPictures(pictures) {
     picturesContainer.classList.remove('pictures-failure');
     picturesContainer.innerHTML = '';
@@ -130,27 +149,34 @@
 
       var oldImg = newPictureElement.querySelector('img');
 
-      if (picture['url']) {
-        var newImg = new Image();
-        newImg.src = picture['url'];
-        newImg.width = '182';
-        newImg.height = '182';
-
-        newImg.onload = function() {
-          newPictureElement.replaceChild(newImg, oldImg);
-        };
-
-        newImg.onerror = function() {
-          newPictureElement.classList.add('picture-load-failure');
-        };
-      } else {
+      if (!picture['url']) {
         newPictureElement.classList.add('picture-load-failure');
+        return;
       }
+
+      var newImg = new Image();
+      newImg.src = picture['url'];
+      newImg.width = 182;
+      newImg.height = 182;
+
+      newImg.onload = function() {
+        newPictureElement.replaceChild(newImg, oldImg);
+      };
+
+      newImg.onerror = function() {
+        newPictureElement.classList.add('picture-load-failure');
+      };
     });
 
     picturesContainer.appendChild(picturesFragment);
   }
 
+  /**
+   * Compare elements for sort func.
+   * @param {number} elem1
+   * @param {number} elem2
+   * @return {number} 1 or -1 or 0
+   */
   function compareElements(elem1, elem2) {
     return (elem1 - elem2) / Math.abs(elem1 - elem2) || 0;
   }

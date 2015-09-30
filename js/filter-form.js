@@ -17,9 +17,9 @@
   function setFilter() {
     if (!filterMap) {
       filterMap = {
-        'none': 'filter-none',
-        'chrome': 'filter-chrome',
-        'sepia': 'filter-sepia'
+        none: 'filter-none',
+        chrome: 'filter-chrome',
+        sepia: 'filter-sepia'
       };
     }
     previewImage.className = 'filter-image-preview' + ' ' + filterMap[selectedFilter.value];

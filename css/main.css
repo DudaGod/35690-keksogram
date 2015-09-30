@@ -370,3 +370,40 @@ input[type=radio]:checked + .upload-filter-label {
     margin-right: 600px;
   }
 }
+
+.gallery-overlay {
+  background: rgba(0, 0, 0, 0.8);
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  position: fixed;
+  right: 0;
+  text-align: center;
+  top: 0;
+  z-index: 1;
+}
+
+.gallery-overlay-close {
+  color: #fff;
+  cursor: pointer;
+  font-size: 45px;
+  padding: 0 10px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: -5px;
+}
+
+.gallery-overlay-preview {
+  background: #fff;
+  margin: 30px 0;
+  display: inline-block;
+}
+
+.gallery-overlay-image[src=""] {
+  border: dotted 1px #ddd;
+  display: block;
+  cursor: pointer;
+  height: 640px;
+  width: 640px;
+}
