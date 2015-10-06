@@ -83,7 +83,7 @@
       timeout = setTimeout(loadPicturesDueToResize, 66);
     });
 
-    window.addEventListener('resizeToDesktop', function() {
+    window.addEventListener('resizeWidthToDesktop', function() {
       var countPicturesAdd = countOfPicturesNeedToAdd(PICTURES_ON_PAGE, PICTURES_IN_LINE);
       if (countPicturesAdd) {
         renderPictures(currentPictures, countPicturesAdd, false);
@@ -91,12 +91,16 @@
       }
     });
 
-    window.addEventListener('resizeToTablet', function() {
+    window.addEventListener('resizeWidthToTablet', function() {
       var countPicturesAdd = countOfPicturesNeedToAdd(PICTURES_ON_PAGE_TABLET, PICTURES_IN_LINE_TABLET);
       if (countPicturesAdd) {
         renderPictures(currentPictures, countPicturesAdd, false);
         extraRenderPictures();
       }
+    });
+
+    window.addEventListener('resizeHeight', function() {
+      extraRenderPictures();
     });
   }
 
@@ -147,10 +151,12 @@
     if (haveAnyAvailablePictures()) {
       if (isTablet() && window.innerWidth >= SCREEN_WIDTH) {
         updateWindowWidth();
-        window.dispatchEvent(new CustomEvent('resizeToDesktop'));
+        window.dispatchEvent(new CustomEvent('resizeWidthToDesktop'));
       } else if (!isTablet() && window.innerWidth < SCREEN_WIDTH) {
         updateWindowWidth();
-        window.dispatchEvent(new CustomEvent('resizeToTablet'));
+        window.dispatchEvent(new CustomEvent('resizeWidthToTablet'));
+      } else if (isPicturesContainerShort()) {
+        window.dispatchEvent(new CustomEvent('resizeHeight'));
       }
     }
   }
