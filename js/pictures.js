@@ -1,3 +1,5 @@
+/* global Picture: true Gallery: true */
+
 'use strict';
 
 (function() {
@@ -25,6 +27,8 @@
   var currentPictures;
   var picturesRenderTo = 0;
   var windowWidth = window.innerWidth;
+
+  var renderedPictures = [];
 
   hideFilter();
 
@@ -323,47 +327,27 @@
    * @param {Boolean} replace - true: update all pictures; false: add new pictures below
    */
   function renderPictures(picturesNeedToRender, picturesCount, replace) {
-    replace = (typeof (replace) === 'undefined') ? true : replace;
+    replace = typeof replace !== 'undefined' ? replace : true;
 
     if (replace) {
+      var elem;
+      while ((elem = renderedPictures.shift())) {
+        elem.unrender();
+      }
+
       picturesContainer.classList.remove('pictures-failure');
-      picturesContainer.innerHTML = '';
     }
 
-    var pictureTemplate = document.getElementById('picture-template');
     var picturesFragment = document.createDocumentFragment();
 
     var picturesRenderFrom = picturesRenderTo;
     picturesRenderTo = picturesRenderFrom + picturesCount;
-
     picturesNeedToRender = picturesNeedToRender.slice(picturesRenderFrom, picturesRenderTo);
 
-    picturesNeedToRender.forEach(function(picture) {
-      var newPictureElement = pictureTemplate.content.children[0].cloneNode(true);
-
-      newPictureElement.querySelector('.picture-comments').textContent = picture['comments'];
-      newPictureElement.querySelector('.picture-likes').textContent = picture['likes'];
-
-      picturesFragment.appendChild(newPictureElement);
-
-      if (!picture['url']) {
-        newPictureElement.classList.add('picture-load-failure');
-        return;
-      }
-
-      var newImg = new Image();
-      newImg.src = picture['url'];
-      newImg.width = 182;
-      newImg.height = 182;
-
-      newImg.addEventListener('load', function() {
-        var oldImg = newPictureElement.querySelector('img');
-        newPictureElement.replaceChild(newImg, oldImg);
-      });
-
-      newImg.addEventListener('error', function() {
-        newPictureElement.classList.add('picture-load-failure');
-      });
+    picturesNeedToRender.forEach(function(pictureData) {
+      var newPictureElement = new Picture(pictureData);
+      newPictureElement.render(picturesFragment);
+      renderedPictures.push(newPictureElement);
     });
 
     picturesContainer.appendChild(picturesFragment);
