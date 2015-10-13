@@ -1,4 +1,4 @@
-/* global Picture: true Gallery: true */
+/* global Photo: true Gallery: true */
 
 'use strict';
 
@@ -30,14 +30,16 @@
 
   var renderedPictures = [];
 
-  hideFilter();
+  var gallery = new Gallery();
 
+  hideFilter();
   initFilters();
 
   loadPictures(loadPicturesCallback);
+
   initScroll();
   initResizeWindow();
-
+  initGallery();
   showFilter();
 
   /**
@@ -106,6 +108,25 @@
     window.addEventListener('resizeHeight', function() {
       extraRenderPictures();
     });
+  }
+
+  function initGallery() {
+    window.addEventListener('galleryclick', function(event) {
+      var photos = getAllPhotosUrl();
+      gallery.setPhotos(photos);
+
+      var indexCurrentPhoto = photos.indexOf(event.detail.photoUrl);
+      gallery.setCurrentPhoto(indexCurrentPhoto);
+      gallery.show();
+    });
+  }
+
+  function getAllPhotosUrl() {
+    var photosUrl = [];
+    currentPictures.forEach(function(item) {
+      photosUrl.push(item['url']);
+    });
+    return photosUrl;
   }
 
   /**
@@ -345,7 +366,7 @@
     picturesNeedToRender = picturesNeedToRender.slice(picturesRenderFrom, picturesRenderTo);
 
     picturesNeedToRender.forEach(function(pictureData) {
-      var newPictureElement = new Picture(pictureData);
+      var newPictureElement = new Photo(pictureData);
       newPictureElement.render(picturesFragment);
       renderedPictures.push(newPictureElement);
     });
