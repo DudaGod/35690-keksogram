@@ -63,14 +63,18 @@
 
 <div class="pictures"></div>
 
-<div class="gallery-overlay invisible">
+<div class="gallery-overlay">
   <span class="gallery-overlay-close">&times;</span>
   <div class="gallery-overlay-preview">
     <img src="" class="gallery-overlay-image" alt="" />
+    <div class="gallery-overlay-controls">
+      <div class="gallery-overlay-controls-like">Нравится <span class="likes-count">0</span></div>
+      <div class="gallery-overlay-controls-comments"><span class="comments-count">125</span> комментариев</div>
+    </div>
   </div>
 </div>
 
-<template id="picture-template">
+<template class="picture-template">
   <a href="" class="picture">
     <img src="" width="182" height="182">
     <span class="picture-stats">
@@ -85,6 +89,6 @@
 <script src="js/resize-form.js" charset="utf-8"></script>
 <script src="js/upload-form.js" charset="utf-8"></script>
 <script src="js/filter-form.js" charset="utf-8"></script>
-<script src="js/pictures.js"></script>
+
 </body>
 </html>

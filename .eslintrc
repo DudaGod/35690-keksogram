@@ -1,6 +1,7 @@
 root: true
 
 globals:
+  Backbone: true
   docCookies: true
 
 env:
