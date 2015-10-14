@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 (function() {
   var uploadForm = document.forms['upload-select-image'];
@@ -93,15 +93,13 @@
 
     if (getValue(displacementX) > getMax(displacementX)) {
       displacementX.value = getMax(displacementX);
-    }
-    else if (getValue(displacementX) < getMin(displacementX)) {
+    } else if (getValue(displacementX) < getMin(displacementX)) {
       displacementX.value = getMin(displacementX);
     }
 
     if (getValue(displacementY) > getMax(displacementY)) {
       displacementY.value = getMax(displacementY);
-    }
-    else if (getValue(displacementY) < getMin(displacementY)) {
+    } else if (getValue(displacementY) < getMin(displacementY)) {
       displacementY.value = getMin(displacementY);
     }
   }
@@ -124,8 +122,7 @@
 
     if (getValue(side) > getMax(side)) {
       side.value = Math.max(getMax(side), getMin(side));
-    }
-    else if (getValue(side) < getMin(side)) {
+    } else if (getValue(side) < getMin(side)) {
       side.value = Math.min(getMax(side), getMin(side));
     }
   }
