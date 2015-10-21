@@ -1,3 +1,5 @@
+/* global Backbone: true PhotoPreView: true */
+
 'use strict';
 
 (function() {
@@ -39,19 +41,15 @@
    * @constructor
    */
   var Gallery = function() {
+    this._photos = new Backbone.Collection();
+    this._photoPreview = new Backbone.View();
+
     this._element = document.querySelector('.gallery-overlay');
     this._closeButton = this._element.querySelector('.gallery-overlay-close');
     this._photoElement = this._element.querySelector('.gallery-overlay-image');
 
     this._currentPhoto = 0;
-    this._photos = [];
 
-    //this._on = function(element, event, callback) {
-    //  element.addEventListener(event, callback.bind(this));
-    //};
-    //this._off = function(element, event, callback) {
-    //  element.removeEventListener(event, callback.bind(this));
-    //};
     this._onCloseClick = this._onCloseClick.bind(this);
     this._onPhotoClick = this._onPhotoClick.bind(this);
     this._onKeyDown = this._onKeyDown.bind(this);
@@ -63,10 +61,6 @@
   Gallery.prototype.show = function() {
     this._element.classList.remove(hiddenClass);
 
-    //this._on(this._closeButton, 'click', this._onCloseClick);
-    //this._on(this._element, 'click', this._onCloseClick);
-    //this._on(this._photoElement, 'click', this._onPhotoClick);
-    //this._on(document.body, 'keydown', this._onKeyDown);
     this._closeButton.addEventListener('click', this._onCloseClick);
     this._element.addEventListener('click', this._onCloseClick);
     this._photoElement.addEventListener('click', this._onPhotoClick);
@@ -82,7 +76,6 @@
     this._closeButton.removeEventListener('click', this._onCloseClick);
     this._element.removeEventListener('click', this._onCloseClick);
     this._photoElement.removeEventListener('click', this._onPhotoClick);
-    //this._off(document.body, 'keydown', this._onKeyDown);
     document.body.removeEventListener('keydown', this._onKeyDown);
   };
 
@@ -92,15 +85,8 @@
    * @private
    */
   Gallery.prototype._showCurrentPhoto = function() {
-    this._photoElement.src = this._photos[this._currentPhoto];
-
-    this._photoElement.onload = function() {
-      this._photoElement.classList.remove('picture-load-failure');
-    }.bind(this);
-
-    this._photoElement.onerror = function() {
-      this._photoElement.classList.add('picture-load-failure');
-    }.bind(this);
+    this._photoPreview = new PhotoPreView({ model: this._photos.at(this._currentPhoto) });
+    this._photoPreview.render();
   };
 
   /**
@@ -110,6 +96,7 @@
    */
   Gallery.prototype._onCloseClick = function(event) {
     event.preventDefault();
+    this._photoPreview.destroy();
     this.hide();
   };
 
@@ -123,6 +110,7 @@
   Gallery.prototype._onPhotoClick = function(event) {
     event.preventDefault();
     event.stopPropagation();
+    this._photoPreview.destroy();
     var clickedPhoto = event.target;
     var photoMiddlePosX = clickedPhoto.x + clickedPhoto.width / 2;
 
@@ -142,13 +130,16 @@
     switch (event.keyCode) {
       case KEY.ESC:
         this.hide();
+        this._photoPreview.destroy();
         break;
 
       case KEY.LEFT:
+        this._photoPreview.destroy();
         this.setPreviousPhoto();
         break;
 
       case KEY.RIGHT:
+        this._photoPreview.destroy();
         this.setNextPhoto();
         break;
     }
@@ -182,7 +173,7 @@
 
   /**
    * Save list of photos.
-   * @param {Array.<string>} photos
+   * @param {Backbone.Collection} photos
    */
   Gallery.prototype.setPhotos = function(photos) {
     this._photos = photos;

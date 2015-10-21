@@ -14,7 +14,7 @@ module.exports = function(grunt) {
         }
       },
       scripts: {
-        files: ['js/*.js'],
+        files: ['js/**/*.js'],
         options: {
           spawn: false,
           livereload: true
@@ -42,7 +42,7 @@ module.exports = function(grunt) {
         bsFiles: {
           src : [
             'css/*.css',
-            'js/*.js',
+            'js/**/*.js',
             'img/*.{png,jpg,gif,svg}',
             'photos/*.{jpg,webp}',
             '*.html'
