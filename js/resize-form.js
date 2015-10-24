@@ -1,5 +1,4 @@
 'use strict';
-
 (function() {
   var uploadForm = document.forms['upload-select-image'];
   var resizeForm = document.forms['upload-resize'];
@@ -75,7 +74,10 @@
 
   resizeForm.onsubmit = function(evt) {
     evt.preventDefault();
+    filterForm.elements['filter-image-src'] = previewImage.src;
 
+    resizeForm.classList.add('invisible');
+    filterForm.classList.remove('invisible');
     if (sideIsValid() && displacementIsValid()) {
       console.dir(filterForm);
       filterForm.elements['filter-image-src'].src = previewImage.src;

@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<template class="picture-template">
+<template id="picture-template">
   <a href="" class="picture">
     <img src="" width="182" height="182">
     <span class="picture-stats">
@@ -89,6 +89,15 @@
 
 <script src="lib/cookies.js" charset="utf-8"></script>
 <script src="js/logo-background.js" charset="utf-8"></script>
+<script>
+  /**
+   * Объект Resizer находится в глобальной области видимости, чтобы разные
+   * формы могли использовать его независимо друг от друга.
+   * @type {Resizer}
+   */
+  var resizer;
+</script>
+<script src="js/resize-picture.js" charset="utf-8"></script>
 <script src="js/resize-form.js" charset="utf-8"></script>
 <script src="js/upload-form.js" charset="utf-8"></script>
 <script src="js/filter-form.js" charset="utf-8"></script>
