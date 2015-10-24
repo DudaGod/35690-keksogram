@@ -143,6 +143,7 @@ body {
 }
 
 .upload-form-controls {
+  background: rgba(0, 0, 0, 0.8);
   border: 0;
   bottom: 0;
   left: 0;
@@ -171,6 +172,13 @@ body {
 .upload-form-controls-fwd {
   background: rgba(255, 231, 83, 0.2) url('../img/icon-arrow.png') center no-repeat;
   float: right;
+}
+
+.upload-resize canvas {
+  cursor: move;
+  left: 0;
+  position: absolute;
+  right: 0;
 }
 
 .upload-resize-controls {
@@ -406,4 +414,46 @@ input[type=radio]:checked + .upload-filter-label {
   cursor: pointer;
   height: 640px;
   width: 640px;
+}
+
+.gallery-overlay-controls {
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.gallery-overlay-controls-comments,
+.gallery-overlay-controls-like {
+  line-height: 40px;
+  padding: 0 20px;
+}
+
+.gallery-overlay-controls-comments {
+  margin-right: 150px;
+  text-align: left;
+}
+
+.gallery-overlay-controls-like {
+  float: right;
+  text-align: right;
+  width: 150px;
+}
+
+.likes-count {
+  cursor: pointre;
+}
+
+.likes-count:before {
+  background: url('../img/icon-heart-sprite.gif') no-repeat 0 0;
+  content: '';
+  cursor: pointer;
+  display: inline-block;
+  height: 15px;
+  margin-right: 5px;
+  vertical-align: middle;
+  width: 18px;
+}
+
+.likes-count-liked:before {
+  background-position-x: -18px;
 }
