@@ -1,4 +1,4 @@
-/* global Backbone: true PhotoPreView: true */
+/* global Backbone: true PhotoPreView: true VideoPreview: true */
 
 'use strict';
 
@@ -42,11 +42,12 @@
    */
   var Gallery = function() {
     this._photos = new Backbone.Collection();
-    this._photoPreview = new Backbone.View();
+    this._preview = new Backbone.View();
 
     this._element = document.querySelector('.gallery-overlay');
     this._closeButton = this._element.querySelector('.gallery-overlay-close');
     this._photoElement = this._element.querySelector('.gallery-overlay-image');
+    this._galleryPreview = this._element.querySelector('.gallery-overlay-preview');
 
     this._currentPhoto = 0;
 
@@ -85,8 +86,13 @@
    * @private
    */
   Gallery.prototype._showCurrentPhoto = function() {
-    this._photoPreview = new PhotoPreView({ model: this._photos.at(this._currentPhoto) });
-    this._photoPreview.render();
+    var model = this._photos.at(this._currentPhoto);
+    this._preview = model.get('preview') ?
+      new VideoPreview({ model: model }) :
+      new PhotoPreView({ model: model });
+
+    this._preview.setElement(this._galleryPreview);
+    this._preview.render();
   };
 
   /**
@@ -96,7 +102,7 @@
    */
   Gallery.prototype._onCloseClick = function(event) {
     event.preventDefault();
-    this._photoPreview.destroy();
+    this._preview.destroy();
     this.hide();
   };
 
@@ -110,7 +116,7 @@
   Gallery.prototype._onPhotoClick = function(event) {
     event.preventDefault();
     event.stopPropagation();
-    this._photoPreview.destroy();
+    this._preview.destroy();
     var clickedPhoto = event.target;
     var photoMiddlePosX = clickedPhoto.x + clickedPhoto.width / 2;
 
@@ -130,16 +136,16 @@
     switch (event.keyCode) {
       case KEY.ESC:
         this.hide();
-        this._photoPreview.destroy();
+        this._preview.destroy();
         break;
 
       case KEY.LEFT:
-        this._photoPreview.destroy();
+        this._preview.destroy();
         this.setPreviousPhoto();
         break;
 
       case KEY.RIGHT:
-        this._photoPreview.destroy();
+        this._preview.destroy();
         this.setNextPhoto();
         break;
     }

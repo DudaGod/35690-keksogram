@@ -23,10 +23,16 @@
     }
   };
 
-  uploadForm.onsubmit = function(evt) {
+  uploadForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     uploadImage(fileElement, function(image) {
+      var resizeInputs = new ResizeInputs();
+      resizeInputs.initialize();
+
+      resizer = new Resizer(image);
+      resizer.setElement(resizeForm);
+
       sessionStorage.setItem('uploaded-image', image);
       resizeForm.querySelector('.resize-image-preview').src = image;
       filterForm.querySelector('.filter-image-preview').src = image;
@@ -34,9 +40,10 @@
       uploadForm.classList.add('invisible');
       resizeForm.classList.remove('invisible');
     });
-  };
+  });
 
   uploadForm.onreset = function() {
     fileElement.classList.remove('upload-input-hasvalue');
+    resizer.remove();
   };
 })();

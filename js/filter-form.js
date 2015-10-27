@@ -34,7 +34,7 @@
   prevButton.onclick = function(evt) {
     evt.preventDefault();
 
-    filterForm.reset();
+    //filterForm.reset();
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
   };

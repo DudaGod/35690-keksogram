@@ -92,6 +92,7 @@ body {
 .resize-image-preview,
 .filter-image-preview {
   max-width: 582px;
+  max-height: 569px;
 }
 
 .filter-chrome {
@@ -403,7 +404,7 @@ input[type=radio]:checked + .upload-filter-label {
 }
 
 .gallery-overlay-preview {
-  background: #000;
+  background: #fff;
   margin: 30px 0;
   display: inline-block;
 }
@@ -440,7 +441,7 @@ input[type=radio]:checked + .upload-filter-label {
 }
 
 .likes-count {
-  cursor: pointre;
+  cursor: pointer;
 }
 
 .likes-count:before {
@@ -455,5 +456,9 @@ input[type=radio]:checked + .upload-filter-label {
 }
 
 .likes-count-liked:before {
-  background-position-x: -18px;
+  background-position: -18px;
+}
+
+.video {
+  cursor: pointer;
 }

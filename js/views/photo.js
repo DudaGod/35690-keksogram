@@ -10,11 +10,6 @@
   var REQUEST_FAILURE_TIMEOUT = 10000;
 
   /**
-   * @type {Element}
-   */
-  var pictureTemplate = document.querySelector('.picture-template');
-
-  /**
    * @constructor
    * @extends {Backbone.View}
    */
@@ -31,7 +26,6 @@
      * @override
      */
     initialize: function() {
-      this.setElement(pictureTemplate.content.children[0].cloneNode(true));
       this._onImageLoad = this._onImageLoad.bind(this);
       this._onImageFail = this._onImageFail.bind(this);
       this._onClick = this._onClick.bind(this);
@@ -49,7 +43,8 @@
         var newImage = new Image();
         newImage.width = 182;
         newImage.height = 182;
-        newImage.src = this.model.get('url');
+
+        newImage.src = this.model.get('preview') ? this.model.get('preview') : this.model.get('url');
 
         this._imageLoadTimeout = setTimeout(function() {
           this.el.classList.add('picture-load-failure');

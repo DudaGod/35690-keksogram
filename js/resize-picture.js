@@ -1,6 +1,8 @@
 'use strict';
 
 (function() {
+  var previewImage = document.forms['upload-resize'].querySelector('.resize-image-preview');
+
   /**
    * @constructor
    * @param {FileBuffer}
@@ -14,12 +16,16 @@
     this._container = document.createElement('canvas');
     this._ctx = this._container.getContext('2d');
 
+    this._lineCropWidth = 6;
+
     // Создаем холст только после загрузки изображения.
     this._image.onload = function() {
       // Размер холста равен размеру загруженного изображения. Это нужно
       // для удобства работы с координатами.
-      this._container.width = this._image.naturalWidth;
-      this._container.height = this._image.naturalHeight;
+      this._container.width = (this._image.naturalWidth > previewImage.width) ?
+        previewImage.width : this._image.naturalWidth;
+      this._container.height = (this._image.naturalHeight > previewImage.height) ?
+        previewImage.height : this._image.naturalHeight;
 
       /**
        * Предлагаемый размер кадра в виде коэффициента относительно меньшей
@@ -91,6 +97,7 @@
 
       var displX = -(this._resizeConstraint.x + this._resizeConstraint.side / 2);
       var displY = -(this._resizeConstraint.y + this._resizeConstraint.side / 2);
+
       // Отрисовка изображения на холсте. Параметры задают изображение, которое
       // нужно отрисовать и координаты его верхнего левого угла.
       // Координаты задаются от центра холста.
@@ -98,7 +105,14 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      //
+      this._ctx.lineWidth = this._lineCropWidth;
+      this._ctx.strokeStyle = '#FFE753';
+      this._ctx.setLineDash([15, 10]);
+      var leftTopCoord = -this._resizeConstraint.side / 2;
+      var rightBottomCoord = this._resizeConstraint.side;
+      this._ctx.strokeRect(leftTopCoord, leftTopCoord, rightBottomCoord, rightBottomCoord);
+
+      window.dispatchEvent(new CustomEvent('canvasloaded'));
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
@@ -248,17 +262,16 @@
      * @return {Image}
      */
     exportImage: function() {
+      var lineCropWidthToAvoid = Math.ceil(this._lineCropWidth * 0.66);
+      var imageDataX = this._container.width / 2 - this._resizeConstraint.side / 2 + lineCropWidthToAvoid;
+      var imageDataY = this._container.height / 2 - this._resizeConstraint.side / 2 + lineCropWidthToAvoid;
+      var sideWIthoutLineCrop = Math.round(this._resizeConstraint.side - lineCropWidthToAvoid * 2);
+
       // Создаем Image, с размерами, указанными при кадрировании.
-      var imageToExport = new Image(
-          this._resizeConstraint.side,
-          this._resizeConstraint.side);
+      var imageToExport = new Image(sideWIthoutLineCrop, sideWIthoutLineCrop);
 
       // Получаем ImageData из области изначального изображения.
-      var imageData = this._ctx.getImageData(
-          this._resizeConstraint.x,
-          this._resizeConstraint.y,
-          this._resizeConstraint.side,
-          this._resizeConstraint.side);
+      var imageData = this._ctx.getImageData(imageDataX, imageDataY, sideWIthoutLineCrop, sideWIthoutLineCrop);
 
       // Создается новый canvas, по размерам совпадающий с кадрированным
       // изображением, в него добавляется ImageData взятый из изначального
@@ -267,8 +280,8 @@
       // изображения.
       var temporaryCanvas = document.createElement('canvas');
       var temporaryCtx = temporaryCanvas.getContext('2d');
-      temporaryCanvas.width = this._resizeConstraint.side;
-      temporaryCanvas.height = this._resizeConstraint.side;
+      temporaryCanvas.width = sideWIthoutLineCrop;
+      temporaryCanvas.height = sideWIthoutLineCrop;
       temporaryCtx.putImageData(imageData, 0, 0);
       imageToExport.src = temporaryCanvas.toDataURL('image/png');
 

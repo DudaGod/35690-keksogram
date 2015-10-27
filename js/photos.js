@@ -65,6 +65,11 @@
   /**
    * @type {Element}
    */
+  var pictureTemplate = document.getElementById('picture-template');
+
+  /**
+   * @type {Element}
+   */
   var filtersBlock = document.querySelector('.filters');
 
   /**
@@ -113,6 +118,7 @@
    * @type {Array.<PhotoView>}
    */
   var renderedViews = [];
+
 
 
   photosCollection.fetch({ timeout: REQUEST_FAILURE_TIMEOUT })
@@ -489,7 +495,9 @@
     }
 
     photosCollection.slice(photosRenderFrom, photosRenderTo).forEach(function(model) {
+
       var view = new PhotoView({ model: model });
+      view.setElement(pictureTemplate.content.children[0].cloneNode(true));
       view.render();
       fragment.appendChild(view.el);
       renderedViews.push(view);
