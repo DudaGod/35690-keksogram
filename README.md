@@ -1,5 +1,7 @@
 # Проект «Кексограм»
 
+### <a href="http://dudagod.github.io/35690-keksogram/" target="_blank">Демо</a>
+
 * Студент: [Дмитрий Дудкевич](https://htmlacademy.ru/profile/id35690).
 * Наставник: [Олег Мохов](https://htmlacademy.ru/profile/id44563).
 

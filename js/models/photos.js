@@ -1,8 +1,8 @@
-/* global Backbone: true PhotoModel: true */
-
 'use strict';
 
-(function() {
+define([
+  'models/photo'
+], function(PhotoModel) {
   /**
    * @constructor
    * @extends {Backbone.Collection}
@@ -14,5 +14,5 @@
     url: 'data/pictures.json'
   });
 
-  window.PhotosCollection = PhotosCollection;
-})();
+  return PhotosCollection;
+});

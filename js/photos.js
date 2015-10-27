@@ -1,8 +1,17 @@
-/* global Backbone: true Gallery: true PhotosCollection: true PhotoView: true */
-
 'use strict';
 
-(function() {
+requirejs.config({
+  baseUrl: 'js'
+});
+
+define([
+  'gallery',
+  'models/photos',
+  'views/photo',
+  'logo-background',
+  'upload-form',
+  'filter-form'
+], function(Gallery, PhotosCollection, PhotoView) {
   /**
    * @const
    * @type {number}
@@ -53,9 +62,15 @@
   var SCREEN_WIDTH = 1380;
 
   /**
+   * @const
+   * @type {number}
+   */
+  var GAP = 100;
+
+  /**
    * @type {Date}
    */
-  var dateNow = new Date();
+  var now = new Date();
 
   /**
    * @type {Element}
@@ -92,10 +107,10 @@
   var windowWidth = window.innerWidth;
 
   /**
-   * Backbone Collection with models which is used to be shown in gallery.
+   * Backbone Collection with all models which are used to be shown in gallery.
    * @type {Backbone.Collection}
    */
-  var photosUrl = new Backbone.Collection();
+  var fullPhotosCollection = new Backbone.Collection();
 
   /**
    * @type {Gallery}
@@ -120,22 +135,20 @@
   var renderedViews = [];
 
 
-
   photosCollection.fetch({ timeout: REQUEST_FAILURE_TIMEOUT })
-  .success(function(loaded, state, jqXHR) {
-    initiallyLoaded = jqXHR.responseJSON;
-    hideFilter();
-    initFilters();
-    initScroll();
-    initResizeWindow();
+    .success(function(loaded, state, jqXHR) {
+      initiallyLoaded = jqXHR.responseJSON;
+      hideFilter();
+      initFilters();
+      initScroll();
+      initResizeWindow();
 
-    setActiveFilter(localStorage.getItem('filterValue') || 'popular');
-    showFilter();
-  })
-  .fail(function() {
-    showLoadFailure();
-  });
-
+      setActiveFilter(parseURL());
+      showFilter();
+    })
+    .fail(function() {
+      showLoadFailure();
+    });
 
   /**
    * Hide block of filters.
@@ -159,13 +172,16 @@
       var clickedFilter = event.target;
 
       if (doesHaveParent(clickedFilter, 'filters-radio')) {
-        setActiveFilter(clickedFilter.value);
+        location.hash = 'filters/' + clickedFilter.value;
       }
+    });
+    window.addEventListener('hashchange', function() {
+      setActiveFilter(parseURL());
     });
   }
 
   /**
-   * It creates two event handler. Custom event (hitthebottom) triggered,
+   * It creates two event handler. Custom event (hitTheBottom) triggered,
    * when there is an empty space for new photos.
    */
   function initScroll() {
@@ -175,7 +191,7 @@
       timeout = setTimeout(loadNextPhotos, 100);
     });
 
-    window.addEventListener('hitthebottom', function() {
+    window.addEventListener('hitTheBottom', function() {
       renderPhotos(countPhotosNeedToRender(false), false);
     });
   }
@@ -196,7 +212,7 @@
       var countPhotosAdd = countPhotosNeedToAdd(PHOTOS_ON_PAGE, PHOTOS_IN_LINE);
       if (countPhotosAdd) {
         renderPhotos(countPhotosAdd, false);
-        while (isThereEmptySpaceForPhotos()) {
+        while (isThereFreeSpaceForPhotos()) {
           renderPhotos(countPhotosNeedToRender(false), false);
         }
       }
@@ -206,26 +222,35 @@
       var countPhotosAdd = countPhotosNeedToAdd(PHOTOS_ON_PAGE_TABLET, PHOTOS_IN_LINE_TABLET);
       if (countPhotosAdd) {
         renderPhotos(countPhotosAdd, false);
-        while (isThereEmptySpaceForPhotos()) {
+        while (isThereFreeSpaceForPhotos()) {
           renderPhotos(countPhotosNeedToRender(false), false);
         }
       }
     });
 
     window.addEventListener('resizeWindowHeight', function() {
-      while (isThereEmptySpaceForPhotos()) {
+      while (isThereFreeSpaceForPhotos()) {
         renderPhotos(countPhotosNeedToRender(false), false);
       }
     });
   }
 
   /**
-   * Fill array with the list of photos url for gallery.
+   * Parse hash of url to activate one of filters
+   * @returns {Array.<string>|string}
    */
-  function setPhotosUrl() {
+  function parseURL() {
+    var match = location.hash.match(/^#filters\/(\S+)$/);
+    return match ? match[1] : 'popular';
+  }
+
+  /**
+   * Fill Backbone collection with the list of photos models for gallery.
+   */
+  function fillPhotosCollection() {
     photosCollection.forEach(function(model) {
       var view = new PhotoView({ model: model });
-      photosUrl.add(view.model);
+      fullPhotosCollection.add(view.model);
     });
   }
 
@@ -246,27 +271,18 @@
   }
 
   /**
-   * Check if the scroll almost at the bottom of the page (-100px).
+   * Check if the scroll almost at the bottom of the page.
    * @returns {boolean}
    */
   function isAtTheBottom() {
-    var GAP = 100;
     return photosContainer.getBoundingClientRect().bottom - GAP <= window.innerHeight;
-  }
-
-  /**
-   * If it has more photos to show.
-   * @returns {boolean}
-   */
-  function hasMorePhotosToShow() {
-    return photosRenderTo < photosCollection.length;
   }
 
   /**
    * Check how many photos available to show.
    * @returns {number}
    */
-  function countOfAvailablePhotos() {
+  function countAvailablePhotos() {
     return photosCollection.length - photosRenderTo;
   }
 
@@ -275,8 +291,8 @@
    * and it has more photos to show.
    */
   function loadNextPhotos() {
-    if (isAtTheBottom() && hasMorePhotosToShow()) {
-      window.dispatchEvent(new CustomEvent('hitthebottom'));
+    if (isAtTheBottom() && countAvailablePhotos() > 0) {
+      window.dispatchEvent(new CustomEvent('hitTheBottom'));
     }
   }
 
@@ -332,7 +348,7 @@
    * Load photos if there is an empty space for them
    */
   function loadPhotosDueToResize() {
-    if (hasMorePhotosToShow()) {
+    if (countAvailablePhotos() > 0) {
       if (isWindowWidthWasNarrow() && isWindowWidthWideNow()) {
         storeWindowWidth();
         window.dispatchEvent(new CustomEvent('resizeWindowToDesktopWidth'));
@@ -353,12 +369,12 @@
    */
   function countPhotosNeedToAdd(photosOnPage, photosInLine) {
     var photosOnPageNow = photosContainer.querySelectorAll('.picture').length;
-    if (photosOnPageNow < photosOnPage) {
-      return photosOnPage - photosOnPageNow;
-    } else {
-      var value = (photosOnPageNow - photosOnPage) % photosInLine;
-      return value ? photosInLine - value : value;
+    var pendingPhotos = photosOnPage - photosOnPageNow;
+    if (pendingPhotos > 0) {
+      return pendingPhotos;
     }
+    pendingPhotos = -pendingPhotos % photosInLine;
+    return pendingPhotos ? photosInLine - pendingPhotos : pendingPhotos;
   }
 
   /**
@@ -367,26 +383,25 @@
    * @returns {number}
    */
   function countPhotosNeedToRender(pageUpdated) {
-    //pageUpdated = typeof pageUpdated === 'undefined' ? true : pageUpdated;
-    var countPhotos = countOfAvailablePhotos();
-    var countPhosotsToRender;
+    var countPhotos = countAvailablePhotos();
+    var countPhotosToRender;
 
     if (!countPhotos) {
       return countPhotos;
     }
 
     if (isTouchDevice()) {
-      countPhosotsToRender = pageUpdated ? PHOTOS_ON_PAGE_TABLET : PHOTOS_IN_LINE_TABLET;
-      return (countPhotos < countPhosotsToRender) ? countPhotos : countPhosotsToRender;
+      countPhotosToRender = pageUpdated ? PHOTOS_ON_PAGE_TABLET : PHOTOS_IN_LINE_TABLET;
+      return (countPhotos < countPhotosToRender) ? countPhotos : countPhotosToRender;
     }
 
     if (pageUpdated) {
-      countPhosotsToRender = isWindowWidthWideNow() ? PHOTOS_ON_PAGE : PHOTOS_ON_PAGE_TABLET;
+      countPhotosToRender = isWindowWidthWideNow() ? PHOTOS_ON_PAGE : PHOTOS_ON_PAGE_TABLET;
     } else {
-      countPhosotsToRender = isWindowWidthWideNow() ? PHOTOS_IN_LINE : PHOTOS_IN_LINE_TABLET;
+      countPhotosToRender = isWindowWidthWideNow() ? PHOTOS_IN_LINE : PHOTOS_IN_LINE_TABLET;
     }
 
-    return (countPhotos < countPhosotsToRender) ? countPhotos : countPhosotsToRender;
+    return (countPhotos < countPhotosToRender) ? countPhotos : countPhotosToRender;
   }
 
   /**
@@ -400,8 +415,8 @@
   /**
    * @returns {boolean}
    */
-  function isThereEmptySpaceForPhotos() {
-    return hasMorePhotosToShow() && isPhotosContainerShort();
+  function isThereFreeSpaceForPhotos() {
+    return countAvailablePhotos() > 0 && isPhotosContainerShort();
   }
 
   /**
@@ -418,12 +433,12 @@
   function setActiveFilter(filterValue) {
     filterPhotos(filterValue);
     photosRenderTo = 0;
-    setPhotosUrl();
+    fillPhotosCollection();
 
     renderPhotos(countPhotosNeedToRender(true), true);
     highlightCheckedFilter(filterValue);
 
-    while (isThereEmptySpaceForPhotos()) {
+    while (isThereFreeSpaceForPhotos()) {
       renderPhotos(countPhotosNeedToRender(false), false);
     }
   }
@@ -456,7 +471,7 @@
     switch (filterValue) {
       case 'new':
         list = list.filter(function(item) {
-          var diffInDays = Math.round((dateNow - new Date(item.date)) / MILLISECONDS_IN_DAY);
+          var diffInDays = Math.round((now - new Date(item.date)) / MILLISECONDS_IN_DAY);
           return diffInDays <= 30 && diffInDays > 0;
         })
         .sort(function(a, b) {
@@ -472,7 +487,6 @@
         break;
     }
     photosCollection.reset(list);
-    localStorage.setItem('filterValue', filterValue);
   }
 
   /**
@@ -503,8 +517,8 @@
       renderedViews.push(view);
 
       view.on('photoclick', function() {
-        gallery.setPhotos(photosUrl);
-        gallery.setCurrentPhoto(photosUrl.models.indexOf(view.model));
+        gallery.setPhotos(fullPhotosCollection);
+        gallery.setCurrentPhoto(fullPhotosCollection.models.indexOf(view.model));
         gallery.show();
       });
     });
@@ -521,4 +535,4 @@
   function compareElements(elem1, elem2) {
     return (elem1 - elem2) / Math.abs(elem1 - elem2) || 0;
   }
-})();
+});

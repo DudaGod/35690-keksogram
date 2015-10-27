@@ -1,6 +1,6 @@
 'use strict';
 
-(function() {
+define(function() {
   var uploadForm = document.forms['upload-select-image'];
   var resizeForm = document.forms['upload-resize'];
   var filterForm = document.forms['upload-filter'];
@@ -33,8 +33,6 @@
 
   prevButton.onclick = function(evt) {
     evt.preventDefault();
-
-    //filterForm.reset();
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
   };
@@ -58,4 +56,4 @@
   }
 
   setFilter();
-})();
+});

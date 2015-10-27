@@ -1,7 +1,8 @@
 'use strict';
 
-(function() {
-  var previewImage = document.forms['upload-resize'].querySelector('.resize-image-preview');
+define(function() {
+  var MAX_CANVAS_WIDTH = 574;
+  var MAX_CANVAS_HEIGHT = 507;
 
   /**
    * @constructor
@@ -15,17 +16,16 @@
     // Холст.
     this._container = document.createElement('canvas');
     this._ctx = this._container.getContext('2d');
-
     this._lineCropWidth = 6;
 
     // Создаем холст только после загрузки изображения.
     this._image.onload = function() {
       // Размер холста равен размеру загруженного изображения. Это нужно
       // для удобства работы с координатами.
-      this._container.width = (this._image.naturalWidth > previewImage.width) ?
-        previewImage.width : this._image.naturalWidth;
-      this._container.height = (this._image.naturalHeight > previewImage.height) ?
-        previewImage.height : this._image.naturalHeight;
+      this._container.width = (this._image.naturalWidth > MAX_CANVAS_WIDTH) ?
+        MAX_CANVAS_WIDTH : this._image.naturalWidth;
+      this._container.height = (this._image.naturalHeight > MAX_CANVAS_HEIGHT) ?
+        MAX_CANVAS_HEIGHT : this._image.naturalHeight;
 
       /**
        * Предлагаемый размер кадра в виде коэффициента относительно меньшей
@@ -108,8 +108,9 @@
       this._ctx.lineWidth = this._lineCropWidth;
       this._ctx.strokeStyle = '#FFE753';
       this._ctx.setLineDash([15, 10]);
-      var leftTopCoord = -this._resizeConstraint.side / 2;
-      var rightBottomCoord = this._resizeConstraint.side;
+      var lineWidthToAvoid = Math.ceil(this._lineCropWidth * 0.66);
+      var leftTopCoord = -this._resizeConstraint.side / 2 - lineWidthToAvoid;
+      var rightBottomCoord = this._resizeConstraint.side + lineWidthToAvoid * 2;
       this._ctx.strokeRect(leftTopCoord, leftTopCoord, rightBottomCoord, rightBottomCoord);
 
       window.dispatchEvent(new CustomEvent('canvasloaded'));
@@ -209,6 +210,14 @@
     },
 
     /**
+     * Возвращает картинку.
+     * @return {Image}
+     */
+    getImage: function() {
+      return this._image;
+    },
+
+    /**
      * Смещает кадрирование на значение указанное в параметрах.
      * @param {number} deltaX
      * @param {number} deltaY
@@ -262,16 +271,14 @@
      * @return {Image}
      */
     exportImage: function() {
-      var lineCropWidthToAvoid = Math.ceil(this._lineCropWidth * 0.66);
-      var imageDataX = this._container.width / 2 - this._resizeConstraint.side / 2 + lineCropWidthToAvoid;
-      var imageDataY = this._container.height / 2 - this._resizeConstraint.side / 2 + lineCropWidthToAvoid;
-      var sideWIthoutLineCrop = Math.round(this._resizeConstraint.side - lineCropWidthToAvoid * 2);
+      var imageDataX = this._container.width / 2 - this._resizeConstraint.side / 2;
+      var imageDataY = this._container.height / 2 - this._resizeConstraint.side / 2;
 
       // Создаем Image, с размерами, указанными при кадрировании.
-      var imageToExport = new Image(sideWIthoutLineCrop, sideWIthoutLineCrop);
+      var imageToExport = new Image(this._resizeConstraint.side, this._resizeConstraint.side);
 
       // Получаем ImageData из области изначального изображения.
-      var imageData = this._ctx.getImageData(imageDataX, imageDataY, sideWIthoutLineCrop, sideWIthoutLineCrop);
+      var imageData = this._ctx.getImageData(imageDataX, imageDataY, this._resizeConstraint.side, this._resizeConstraint.side);
 
       // Создается новый canvas, по размерам совпадающий с кадрированным
       // изображением, в него добавляется ImageData взятый из изначального
@@ -280,8 +287,8 @@
       // изображения.
       var temporaryCanvas = document.createElement('canvas');
       var temporaryCtx = temporaryCanvas.getContext('2d');
-      temporaryCanvas.width = sideWIthoutLineCrop;
-      temporaryCanvas.height = sideWIthoutLineCrop;
+      temporaryCanvas.width = this._resizeConstraint.side;
+      temporaryCanvas.height = this._resizeConstraint.side;
       temporaryCtx.putImageData(imageData, 0, 0);
       imageToExport.src = temporaryCanvas.toDataURL('image/png');
 
@@ -315,6 +322,5 @@
     this.y = y;
   };
 
-
-  window.Resizer = Resizer;
-})();
+  return Resizer;
+});

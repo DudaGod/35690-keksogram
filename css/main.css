@@ -6,6 +6,7 @@ body {
 
 html {
   background: #232321;
+  height: 100%;
 }
 
 html.inline-element {
@@ -15,6 +16,9 @@ html.inline-element {
 body {
   color: #ffe753;
   font: 14px 'Open Sans', Arial, sans-serif;
+  min-height: 100%;
+  min-width: 990px;
+  position: relative;
 }
 
 .invisible {
@@ -60,7 +64,7 @@ body {
   margin-top: 5px;
   padding: 0;
   position: absolute;
-  width: 582px;
+  width: 574px;
 }
 
 .upload-overlay {
@@ -74,7 +78,7 @@ body {
 
 .upload-form {
   height: 569px;
-  width: 582px;
+  width: 574px;
 }
 
 .upload-image {
@@ -92,7 +96,7 @@ body {
 .resize-image-preview,
 .filter-image-preview {
   max-width: 582px;
-  max-height: 569px;
+  max-height: 507px;
 }
 
 .filter-chrome {
@@ -116,7 +120,7 @@ body {
   cursor: pointer;
   height: 182px;
   margin: 0;
-  left: 202px;
+  left: 198px;
   padding: 0;
   position: absolute;
   top: 193px;
@@ -304,7 +308,7 @@ input[type=radio]:checked + .upload-filter-label {
 .picture-load-failure {
   background: url('../img/icon-cross.png') no-repeat center;
   border: solid 1px rgba(255, 255, 255, 0.2);
-  opacity: 1;
+  opacity: 0.3;
   line-height: 182px;
 }
 
@@ -370,13 +374,13 @@ input[type=radio]:checked + .upload-filter-label {
   }
 
   .picture:nth-of-type(2n-1):nth-of-type(-n+6) {
-    margin-right: 12px;
+    margin-right: 14px;
   }
 
   .picture:nth-of-type(2),
   .picture:nth-of-type(6),
   .picture:nth-of-type(10) {
-    margin-right: 600px;
+    margin-right: 602px;
   }
 }
 
