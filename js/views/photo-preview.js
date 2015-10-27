@@ -1,14 +1,11 @@
-/* global Backbone: true */
-
 'use strict';
 
-(function() {
-
+define(function() {
   /**
    * @constructor
    * @extends {Backbone.View}
    */
-  var PhotoPreView = Backbone.View.extend({
+  var PhotoPreview = Backbone.View.extend({
     events: {
       click: '_onClick'
     },
@@ -18,9 +15,9 @@
      */
     initialize: function() {
       this._onClick = this._onClick.bind(this);
-      this._onModelLike = this._onModelLike.bind(this);
+      this._onLikesChanged = this._onLikesChanged.bind(this);
 
-      this.listenTo(this.model, 'change:liked', this._onModelLike);
+      this.listenTo(this.model, 'change:liked', this._onLikesChanged);
     },
 
     /**
@@ -45,7 +42,7 @@
     },
 
     /**
-     * Event handler on photo preview.
+     * Event handler of photo preview.
      * @param {Event} event
      * @private
      */
@@ -64,7 +61,7 @@
     /**
      * @private
      */
-    _onModelLike: function() {
+    _onLikesChanged: function() {
       this._updateLike();
     },
 
@@ -83,5 +80,5 @@
     }
   });
 
-  window.PhotoPreView = PhotoPreView;
-})();
+  return PhotoPreview;
+});

@@ -1,8 +1,9 @@
-/* global Backbone: true PhotoPreView: true VideoPreview: true */
-
 'use strict';
 
-(function() {
+define([
+  'views/photo-preview',
+  'views/video-preview'
+], function(PhotoPreview, VideoPreview) {
   /**
    * List of const keyCode to handle keyboard events.
    * @readonly
@@ -27,7 +28,7 @@
    * @param {number} max
    * @return {number}
    */
-  function getExistingIndexOfPhoto(value, min, max) {
+  function getIndexOfPhoto(value, min, max) {
     if (value > max) {
       return min;
     } else if (value < min) {
@@ -89,7 +90,7 @@
     var model = this._photos.at(this._currentPhoto);
     this._preview = model.get('preview') ?
       new VideoPreview({ model: model }) :
-      new PhotoPreView({ model: model });
+      new PhotoPreview({ model: model });
 
     this._preview.setElement(this._galleryPreview);
     this._preview.render();
@@ -118,9 +119,9 @@
     event.stopPropagation();
     this._preview.destroy();
     var clickedPhoto = event.target;
-    var photoMiddlePosX = clickedPhoto.x + clickedPhoto.width / 2;
+    var clickedToLeftSide = event.clientX <= clickedPhoto.x + clickedPhoto.width / 2;
 
-    if (event.clientX <= photoMiddlePosX) {
+    if (clickedToLeftSide) {
       this.setPreviousPhoto();
     } else {
       this.setNextPhoto();
@@ -157,9 +158,7 @@
    * @param {number} index
    */
   Gallery.prototype.setCurrentPhoto = function(index) {
-    index = getExistingIndexOfPhoto(index, 0, this._photos.length - 1);
-
-    this._currentPhoto = index;
+    this._currentPhoto = getIndexOfPhoto(index, 0, this._photos.length - 1);
     this._showCurrentPhoto();
   };
 
@@ -185,6 +184,5 @@
     this._photos = photos;
   };
 
-  // Export Gallery constructor to global scope.
-  window.Gallery = Gallery;
-})();
+  return Gallery;
+});

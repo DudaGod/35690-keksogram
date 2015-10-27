@@ -1,9 +1,6 @@
-/* global Backbone: true */
-
 'use strict';
 
-(function() {
-
+define(function() {
   /**
    * @constructor
    * @extends {Backbone.View}
@@ -26,7 +23,7 @@
     },
 
     /**
-     * display video
+     * Display video instead of image
      * @override
      */
     render: function() {
@@ -49,7 +46,7 @@
     },
 
     /**
-     * clear all event listeners, replace video with image back and update like attribute
+     * Clear all event listeners, replace video with image back and update like attribute
      * @override
      */
     destroy: function() {
@@ -60,7 +57,7 @@
     },
 
     /**
-     * Event handler on photo preview.
+     * Event handler of video preview.
      * @param {Event} event
      * @private
      */
@@ -74,7 +71,11 @@
           this.model.like();
         }
       } else if (clickedElement.tagName === 'VIDEO') {
-        this.video.paused ? this.video.play() : this.video.pause();
+        if (this.video.paused) {
+          this.video.play();
+        } else {
+          this.video.pause();
+        }
       }
     },
 
@@ -100,5 +101,5 @@
     }
   });
 
-  window.VideoPreview = VideoPreview;
-})();
+  return VideoPreview;
+});

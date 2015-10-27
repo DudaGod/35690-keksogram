@@ -1,6 +1,11 @@
+/* global resizer: true */
+
 'use strict';
 
-(function() {
+define([
+  'resize-form',
+  'resize-picture'
+], function(ResizeInputs, Resizer) {
   var uploadForm = document.forms['upload-select-image'];
   var resizeForm = document.forms['upload-resize'];
   var filterForm = document.forms['upload-filter'];
@@ -34,7 +39,6 @@
       resizer.setElement(resizeForm);
 
       sessionStorage.setItem('uploaded-image', image);
-      resizeForm.querySelector('.resize-image-preview').src = image;
       filterForm.querySelector('.filter-image-preview').src = image;
 
       uploadForm.classList.add('invisible');
@@ -46,4 +50,4 @@
     fileElement.classList.remove('upload-input-hasvalue');
     resizer.remove();
   };
-})();
+});

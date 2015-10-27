@@ -1,8 +1,6 @@
-/* global Backbone: true */
-
 'use strict';
 
-(function() {
+define(function() {
   /**
    * @const
    * @type {number}
@@ -27,7 +25,7 @@
      */
     initialize: function() {
       this._onImageLoad = this._onImageLoad.bind(this);
-      this._onImageFail = this._onImageFail.bind(this);
+      this._onImageLoadFail = this._onImageLoadFail.bind(this);
       this._onClick = this._onClick.bind(this);
     },
 
@@ -51,8 +49,8 @@
         }.bind(this), REQUEST_FAILURE_TIMEOUT);
 
         newImage.addEventListener('load', this._onImageLoad);
-        newImage.addEventListener('error', this._onImageFail);
-        newImage.addEventListener('abort', this._onImageFail);
+        newImage.addEventListener('error', this._onImageLoadFail);
+        newImage.addEventListener('abort', this._onImageLoadFail);
       }
     },
 
@@ -88,7 +86,7 @@
      * @param {Event} event
      * @private
      */
-    _onImageFail: function(event) {
+    _onImageLoadFail: function(event) {
       var failedImage = event.target;
       this._cleanupImageListeners(failedImage);
 
@@ -101,10 +99,10 @@
      */
     _cleanupImageListeners: function(image) {
       image.removeEventListener('load', this._onImageLoad);
-      image.removeEventListener('error', this._onImageFail);
-      image.removeEventListener('abort', this._onImageFail);
+      image.removeEventListener('error', this._onImageLoadFail);
+      image.removeEventListener('abort', this._onImageLoadFail);
     }
   });
 
-  window.PhotoView = PhotoView;
-})();
+  return PhotoView;
+});
